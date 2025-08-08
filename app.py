@@ -4,9 +4,10 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from sklearn.impute import SimpleImputer
-import joblib
 
-# Load and preprocess the dataset (simulate preprocessing pipeline)
+st.set_page_config(page_title="Oral Cancer Prediction", layout="centered", page_icon="🦷")
+
+# Load and preprocess dataset
 @st.cache_data
 def load_data():
     df = pd.read_csv("oral_cancer_prediction_dataset_modified.csv")
@@ -15,19 +16,16 @@ def load_data():
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     categorical_cols = df.select_dtypes(include=['object']).columns
 
-    # Impute missing values
-    num_imputer = SimpleImputer(strategy='median')
-    df[numeric_cols] = num_imputer.fit_transform(df[numeric_cols])
+    # Impute
+    df[numeric_cols] = SimpleImputer(strategy='median').fit_transform(df[numeric_cols])
+    df[categorical_cols] = SimpleImputer(strategy='most_frequent').fit_transform(df[categorical_cols])
 
-    cat_imputer = SimpleImputer(strategy='most_frequent')
-    df[categorical_cols] = cat_imputer.fit_transform(df[categorical_cols])
-
-    # Handle outliers
+    # Outlier clipping
     df['Age'] = df['Age'].clip(15, 100)
     df['Cancer Stage'] = df['Cancer Stage'].clip(0, 4)
     df['Survival Rate (5-Year, %)'] = df['Survival Rate (5-Year, %)'].clip(0, 100)
 
-    # Scale numeric data
+    # Scale numerics
     scaler = MinMaxScaler()
     df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
 
@@ -40,47 +38,64 @@ def load_data():
 
     return df, label_encoders, scaler
 
-# Load data and prepare model
+# Load and train
 df_cleaned, label_encoders, scaler = load_data()
 X = df_cleaned.drop(columns=["Oral Cancer (Diagnosis)", "ID"])
 y = df_cleaned["Oral Cancer (Diagnosis)"]
-
-# Train model
 model = RandomForestClassifier(random_state=42)
 model.fit(X, y)
 
-# Web app UI
-st.title("🦷 Oral Cancer Prediction App")
-st.markdown("Enter the patient details below to predict the risk of oral cancer.")
+# 🦷 Title
+st.markdown("<h1 style='text-align: center; color: #0099ff;'>🦷 Oral Cancer Risk Predictor</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Fill out the form below to estimate the probability of oral cancer.</p>", unsafe_allow_html=True)
+st.divider()
 
-# Collect user input
+# 🌟 Sidebar Info
+with st.sidebar:
+    st.header("ℹ️ About")
+    st.write("This tool uses machine learning to predict the likelihood of oral cancer based on patient details.")
+    st.write("Model: *Random Forest*")
+    st.markdown("---")
+    st.caption("Developed for IT41033 - Intake11")
+
+# 📝 User Input Form
+st.subheader("📋 Enter Patient Information")
+
 def user_input():
+    col1, col2 = st.columns(2)
     inputs = {}
 
-    # Use all features except ID and target
-    for col in X.columns:
+    for idx, col in enumerate(X.columns):
         if col in label_encoders:
             options = label_encoders[col].classes_.tolist()
-            value = st.selectbox(f"{col}:", options)
-            inputs[col] = label_encoders[col].transform([value])[0]
+            with (col1 if idx % 2 == 0 else col2):
+                value = st.selectbox(f"{col.replace('_',' ')}", options)
+                inputs[col] = label_encoders[col].transform([value])[0]
         else:
-            value = st.number_input(f"{col}:", min_value=0.0, step=0.1)
-            # Scale numeric input
-            col_min = df_cleaned[col].min()
-            col_max = df_cleaned[col].max()
-            inputs[col] = (value - col_min) / (col_max - col_min + 1e-5)
+            with (col1 if idx % 2 == 0 else col2):
+                value = st.slider(f"{col}", 0.0, 100.0, step=1.0)
+                # scale to [0, 1] range based on dataset
+                col_min = df_cleaned[col].min()
+                col_max = df_cleaned[col].max()
+                inputs[col] = (value - col_min) / (col_max - col_min + 1e-6)
 
     return pd.DataFrame([inputs])
 
-# Predict
 user_df = user_input()
 
-if st.button("Predict"):
-    prediction = model.predict(user_df)[0]
-    proba = model.predict_proba(user_df)[0][prediction]
+# 🚨 Predict Button
+if st.button("🔍 Predict Oral Cancer Risk"):
+    pred = model.predict(user_df)[0]
+    prob = model.predict_proba(user_df)[0][1]  # Probability of class 1 (cancer)
 
-    if prediction == 1:
-        st.error(f"⚠️ Prediction: Oral Cancer Detected (Probability: {proba:.2f})")
+    st.subheader("📊 Prediction Result:")
+    if pred == 1:
+        st.error("⚠️ *High Risk of Oral Cancer Detected*")
     else:
-        st.success(f"✅ Prediction: No Oral Cancer (Probability: {proba:.2f})")
+        st.success("✅ *Low Risk: No Oral Cancer Detected*")
 
+    st.markdown(f"*Probability of Oral Cancer:* {prob:.2%}")
+    st.progress(prob)
+
+    st.markdown("---")
+    st.caption("⚠️ This is a prediction tool and *not a medical diagnosis*. Please consult a professional for medical advice.")
