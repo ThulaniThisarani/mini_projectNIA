@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 from sklearn.impute import SimpleImputer
+import plotly.express as px
 
 st.set_page_config(page_title="Oral Cancer Prediction", layout="centered", page_icon="🦷")
 
@@ -87,6 +88,7 @@ user_df = user_input()
 if st.button("🔍 Predict Oral Cancer Risk"):
     pred = model.predict(user_df)[0]
     prob = model.predict_proba(user_df)[0][1]  # Probability of class 1 (cancer)
+    prob_no_cancer = 1 - prob
 
     st.subheader("📊 Prediction Result:")
     if pred == 1:
@@ -96,6 +98,29 @@ if st.button("🔍 Predict Oral Cancer Risk"):
 
     st.markdown(f"*Probability of Oral Cancer:* {prob:.2%}")
     st.progress(prob)
+
+    # --- Chart 1: Bar Chart ---
+    st.markdown("### 📈 Probability Comparison")
+    chart_df = pd.DataFrame({
+        "Condition": ["No Oral Cancer", "Oral Cancer"],
+        "Probability": [prob_no_cancer, prob]
+    })
+    fig_bar = px.bar(chart_df, x="Condition", y="Probability", 
+                     color="Condition", text="Probability", 
+                     range_y=[0,1], color_discrete_map={
+                         "No Oral Cancer": "green", 
+                         "Oral Cancer": "red"
+                     })
+    fig_bar.update_traces(texttemplate='%{text:.2%}', textposition='outside')
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+    # --- Chart 2: Donut Chart ---
+    st.markdown("### 🎯 Risk Gauge")
+    fig_donut = px.pie(chart_df, values="Probability", names="Condition",
+                       hole=0.5, color="Condition", 
+                       color_discrete_map={"No Oral Cancer": "green", "Oral Cancer": "red"})
+    fig_donut.update_traces(textinfo="label+percent")
+    st.plotly_chart(fig_donut, use_container_width=True)
 
     st.markdown("---")
     st.caption("⚠️ This is a prediction tool and *not a medical diagnosis*. Please consult a professional for medical advice.")
