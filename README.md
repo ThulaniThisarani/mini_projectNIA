@@ -129,31 +129,8 @@ A web application that predicts the risk of oral cancer based on patient informa
 - Uses a **Random Forest Classifier** for predictions.
 - Fully responsive layout with sidebar info and instructions.
 
----
 
-## 🛠️ Installation
 
-1. Clone the repository:
-   ```bash
-   git clone <your-repo-url>
-   cd <your-repo-folder>
-````
-
-2. Create a virtual environment (optional but recommended):
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   venv\Scripts\activate     # Windows
-   ```
-
-3. Install dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
 
 ## 🚀 Running the App
 
@@ -167,7 +144,6 @@ A web application that predicts the risk of oral cancer based on patient informa
 
 3. The app will open in your default browser. Fill out the form and click **Predict Oral Cancer Risk** to see results.
 
----
 
 ## 📊 Input Details
 
@@ -195,13 +171,4 @@ This tool is **not a medical diagnostic device**. Results are based on a machine
 
 ---
 
-## 📌 Author
 
-Developed for **IT41033 - Intake 11** as a Mini-Project by \[Your Name].
-
-```
-
-I can also create a **requirements.txt** for this app so it’s ready to deploy on Streamlit or any local environment.  
-
-Do you want me to do that next?
-```
