@@ -110,6 +110,7 @@ user_df = user_input()
 # ==================================================
 model_choice = st.radio("Select Model:", ["Random Forest", "Logistic Regression"])
 
+
 if st.button("🔍 Predict Oral Cancer Risk"):
     model = rf_model if model_choice == "Random Forest" else log_model
     pred = model.predict(user_df)[0]
