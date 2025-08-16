@@ -72,8 +72,7 @@ The pipeline follows a **CRISP-DM style workflow** (Data Understanding → Prepr
 The script saves the following files:
 
 - `oral_cancer_with_clusters.csv` → dataset with cluster labels
-- `cluster_profile_numeric.csv` → average numeric features per cluster
-- `cluster_target_counts.csv` → oral cancer diagnosis counts per cluster
+
 
 ---
 
@@ -114,9 +113,95 @@ pip install pandas numpy matplotlib seaborn scikit-learn
 
 This project is for **educational and research purposes**.
 
-```
+
+# 🦷 Oral Cancer Risk Predictor
+
+A web application that predicts the risk of oral cancer based on patient information using machine learning. Built with **Streamlit**, **Pandas**, and **Scikit-learn**.
 
 ---
 
-Would you like me to also generate this README.md as an **actual file** (`README.md`) in your `/mnt/data/` folder so you can download it directly?
+## 🔹 Features
+
+- Predicts **high or low risk** of oral cancer.
+- Provides **probability scores** for better insight.
+- Interactive **form inputs** for patient data.
+- Scales numerical inputs and encodes categorical features.
+- Uses a **Random Forest Classifier** for predictions.
+- Fully responsive layout with sidebar info and instructions.
+
+---
+
+## 🛠️ Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <your-repo-url>
+   cd <your-repo-folder>
+````
+
+2. Create a virtual environment (optional but recommended):
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   venv\Scripts\activate     # Windows
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+---
+
+## 🚀 Running the App
+
+1. Ensure your dataset `oral_cancer_prediction_dataset_modified.csv` is in the project folder.
+
+2. Start the Streamlit app:
+
+   ```bash
+   streamlit run app.py
+   ```
+
+3. The app will open in your default browser. Fill out the form and click **Predict Oral Cancer Risk** to see results.
+
+---
+
+## 📊 Input Details
+
+* **Age:** Patient age 
+* **Cancer Stage:** Stage of cancer 
+* **Survival Rate (5-Year, %):** Probability of 5-year survival (0–100%)
+* Other patient-related categorical and numerical features as in the dataset.
+
+---
+
+## ⚠️ Disclaimer
+
+This tool is **not a medical diagnostic device**. Results are based on a machine learning model and should **not replace professional medical advice**. Always consult a healthcare professional for accurate diagnosis and treatment.
+
+---
+
+## 📝 Technologies Used
+
+* Python 3.x
+* [Streamlit](https://streamlit.io/)
+* [Pandas](https://pandas.pydata.org/)
+* [NumPy](https://numpy.org/)
+* [Scikit-learn](https://scikit-learn.org/)
+* Random Forest Classifier
+
+---
+
+## 📌 Author
+
+Developed for **IT41033 - Intake 11** as a Mini-Project by \[Your Name].
+
+```
+
+I can also create a **requirements.txt** for this app so it’s ready to deploy on Streamlit or any local environment.  
+
+Do you want me to do that next?
 ```
