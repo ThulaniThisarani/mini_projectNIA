@@ -2,14 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-import joblib
 
 # ==================================================
 # Streamlit Page Setup
@@ -24,7 +24,7 @@ st.divider()
 with st.sidebar:
     st.header("ℹ️ About")
     st.write("This tool uses machine learning to predict the likelihood of oral cancer based on patient details.")
-    st.write("Models available: *Random Forest* and *Logistic Regression*")
+    st.write("Models available: *Random Forest, Logistic Regression, SVM, KNN, Gradient Boosting*")
     st.markdown("---")
     st.caption("Developed for IT41033 - Intake11")
 
@@ -38,7 +38,6 @@ def load_data():
 
     # Drop rows where target is missing
     df = df.dropna(subset=["Oral Cancer (Diagnosis)"]).reset_index(drop=True)
-
     return df
 
 df = load_data()
@@ -68,17 +67,22 @@ preprocessor = ColumnTransformer(
 # ==================================================
 # Train Models
 # ==================================================
-rf_model = Pipeline([
-    ("prep", preprocessor),
-    ("clf", RandomForestClassifier(random_state=42))
-])
-rf_model.fit(X, y)
+models = {
+    "Random Forest": RandomForestClassifier(random_state=42),
+    "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
+    "SVM": SVC(probability=True, kernel="rbf", random_state=42),
+    "KNN": KNeighborsClassifier(),
+    "Gradient Boosting": GradientBoostingClassifier(random_state=42)
+}
 
-log_model = Pipeline([
-    ("prep", preprocessor),
-    ("clf", LogisticRegression(max_iter=1000, random_state=42))
-])
-log_model.fit(X, y)
+trained_models = {}
+for name, clf in models.items():
+    pipeline = Pipeline([
+        ("prep", preprocessor),
+        ("clf", clf)
+    ])
+    pipeline.fit(X, y)
+    trained_models[name] = pipeline
 
 # ==================================================
 # User Input Form
@@ -108,11 +112,10 @@ user_df = user_input()
 # ==================================================
 # Prediction
 # ==================================================
-model_choice = st.radio("Select Model:", ["Random Forest", "Logistic Regression"])
-
+model_choice = st.radio("Select Model:", list(trained_models.keys()))
 
 if st.button("🔍 Predict Oral Cancer Risk"):
-    model = rf_model if model_choice == "Random Forest" else log_model
+    model = trained_models[model_choice]
     pred = model.predict(user_df)[0]
     prob = model.predict_proba(user_df)[0][1]
 
