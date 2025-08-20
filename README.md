@@ -118,7 +118,7 @@ This project is for **educational and research purposes**.
 
 ## Live Demo
 
-Check out the live version of this app: [Mini Project NIA App]([https://thulanithisarani-mini-projectnia-app-lzpp4q.streamlit.app/](https://thulanithisarani-mini-projectnia-app-lzpp4q.streamlit.app/))
+Check out the live version of this app: [Mini Project NIA App](https://thulanithisarani-mini-projectnia-app-lzpp4q.streamlit.app/)
 
 
 A web application that predicts the risk of oral cancer based on patient information using machine learning. Built with **Streamlit**, **Pandas**, and **Scikit-learn**.
